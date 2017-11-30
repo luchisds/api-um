@@ -3,12 +3,16 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+// Import db models
+require __DIR__ . '/../src/models/product.php';
+
 // Routes
 
 // Update price and stock by product color
 $app->post('/v1/productos/{id}', function(Request $request, Response $response, array $args) {
   $id = $args['id'];
-  $data = array('message' => 'Actualización correcta', 'product' => $id);
+  $product = Product::all()->toJson();
+  $data = array('message' => $product, 'product' => $id);
 
   return $response->withJson($data);
 });
