@@ -2,9 +2,9 @@
 
 use \Illuminate\Database\Eloquent\Model as Model;
 
-class Product extends Model {
+class Purchase extends Model {
 
-  protected $table = 'productos';
+  protected $table = 'compras';
   public $timestamps = false;
 
 }
