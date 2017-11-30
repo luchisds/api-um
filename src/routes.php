@@ -12,9 +12,9 @@ require __DIR__ . '/../src/models/purchase.php';
 // Update price and stock by product color
 $app->post('/v1/productos/{id}', function(Request $request, Response $response, array $args) {
   $data = $request->getParsedBody();
-  $product_id = $args['id'];
+  $productId = $args['id'];
 
-  $product = Product::where('product_id', $product_id)->first();
+  $product = Product::where('product_id', $productId)->first();
   $product->price = $data['price'];
   $product->stock = $data['stock'];
   $product->save();
@@ -27,10 +27,10 @@ $app->post('/v1/productos/{id}', function(Request $request, Response $response, 
 // Update purchases by product
 $app->post('/v1/compras/{id}', function(Request $request, Response $response, array $args) {
   $data = $request->getParsedBody();
-  $product_id = $args['id'];
+  $productId = $args['id'];
 
   $purchase = new Purchase;
-  $purchase->product_id = $product_id;
+  $purchase->product_id = $productId;
   $purchase->quantity = $data['quantity'];
   $purchase->date = $data['date'];
   $purchase->invoice = $data['invoice'];
@@ -45,8 +45,8 @@ $app->post('/v1/compras/{id}', function(Request $request, Response $response, ar
 $app->get('/v1/compras', function(Request $request, Response $response, array $args) {
   $data = $request->getQueryParams();
 
-  if(isset($data['from_date']) && isset($data['to_date'])) {
-    $purchase = Purchase::whereBetween('date', [$data['from_date'], $data['to_date']])->get();
+  if(isset($data['fromDate']) && isset($data['toDate'])) {
+    $purchase = Purchase::whereBetween('date', [$data['fromDate'], $data['toDate']])->get();
   } else {
     $purchase = Purchase::all();
   }
