@@ -3,23 +3,41 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-// Import db models
+// Import DB Models
 require __DIR__ . '/../src/models/product.php';
 require __DIR__ . '/../src/models/purchase.php';
+// Import Validators
+require __DIR__ . '/../src/validators.php';
+
 
 // Routes
 
 // Update price and stock by product color
 $app->post('/v1/productos/{id}', function(Request $request, Response $response, array $args) {
   $data = $request->getParsedBody();
-  $productId = $args['id'];
 
-  $product = Product::where('product_id', $productId)->first();
-  $product->price = $data['price'];
-  $product->stock = $data['stock'];
-  $product->save();
+  //validation
+  $toClean = new \stdClass();
+  $toClean->product_id = $args['id'];
+  $toClean->price = $data['price'];
+  $toClean->stock = $data['stock'];
+  $validation = validateProductUpdate($toClean);
 
-  $messages = array('status' => 'Actualización correcta');
+  //actions
+  if($validation['isValid'] === true) {
+    $product = Product::where('product_id', $toClean->product_id)->first();
+    if($product === null) {
+      $messages = array('error' => 'Código de producto inexistente');
+    } else {
+      $product->price = $toClean->price;
+      $product->stock = $toClean->stock;
+      $product->save();
+      $messages = array('status' => 'Actualización correcta');
+    }
+  } else {
+    $messages = array('validation' => $validation['errors']);
+  }
+
   return $response->withJson($messages);
 });
 
@@ -27,16 +45,33 @@ $app->post('/v1/productos/{id}', function(Request $request, Response $response, 
 // Update purchases by product
 $app->post('/v1/compras/{id}', function(Request $request, Response $response, array $args) {
   $data = $request->getParsedBody();
-  $productId = $args['id'];
 
-  $purchase = new Purchase;
-  $purchase->product_id = $productId;
-  $purchase->quantity = $data['quantity'];
-  $purchase->date = $data['date'];
-  $purchase->invoice = $data['invoice'];
-  $purchase->save();
+  //validation
+  $toClean = new \stdClass();
+  $toClean->product_id = $args['id'];
+  $toClean->quantity = $data['quantity'];
+  $toClean->date = $data['date'];
+  $toClean->invoice = $data['invoice'];
+  $validation = validatePurchaseUpdate($toClean);
 
-  $messages = array('status' => 'Actualización correcta');
+  //actions
+  if($validation['isValid'] === true) {
+    $product = Product::where('product_id', $toClean->product_id)->first();
+    if($product === null) {
+      $messages = array('error' => 'Código de producto inexistente');
+    } else {
+      $purchase = new Purchase;
+      $purchase->product_id = $toClean->product_id;
+      $purchase->quantity = $toClean->quantity;
+      $purchase->date = $toClean->date;
+      $purchase->invoice = $toClean->invoice;
+      $purchase->save();
+      $messages = array('status' => 'Actualización correcta');
+    }
+  } else {
+    $messages = array('validation' => $validation['errors']);
+  }
+
   return $response->withJson($messages);
 });
 
