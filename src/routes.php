@@ -56,9 +56,10 @@ $app->post('/v1/compras/{id}', function(Request $request, Response $response, ar
 
   //actions
   if($validation['isValid'] === true) {
-    $product = Product::where('product_id', $toClean->product_id)->first();
-    if($product === null) {
+    if(Product::where('product_id', $toClean->product_id)->first() === null) {
       $messages = array('error' => 'Código de producto inexistente');
+    } elseif(Purchase::where('product_id', $toClean->product_id)->where('invoice', $toClean->invoice)->first() !== null) {
+      $messages = array('error' => 'Compra ya registrada anteriormente');
     } else {
       $purchase = new Purchase;
       $purchase->product_id = $toClean->product_id;
@@ -81,12 +82,30 @@ $app->get('/v1/compras', function(Request $request, Response $response, array $a
   $data = $request->getQueryParams();
 
   if(isset($data['fromDate']) && isset($data['toDate'])) {
-    $purchase = Purchase::whereBetween('date', [$data['fromDate'], $data['toDate']])->get();
+    //validation
+    $toClean = new \stdClass();
+    $toClean->fromDate = $data['fromDate'];
+    $toClean->toDate = $data['toDate'];
+    $validation = validatePurchaseCheck($toClean);
+
+    //actions
+    if($validation['isValid'] === true) {
+      $purchase = Purchase::whereBetween('date', [$toClean->fromDate, $toClean->toDate])->get();
+      $messages = array('status' => 'ok', 'data' => $purchase);
+    } else {
+      $messages = array('validation' => $validation['errors']);
+    }
   } else {
-    $purchase = Purchase::all();
+    if(isset($data['fromDate'])) {
+      $messages = array('error' => 'Falta fecha hasta (toDate)');
+    } elseif(isset($data['toDate'])) {
+      $messages = array('error' => 'Falta fecha desde (fromDate)');
+    } else {
+      $purchase = Purchase::all();
+      $messages = array('status' => 'ok', 'data' => $purchase);
+    }
   }
 
-  $messages = array('purchases' => $purchase);
   return $response->withJson($messages);
 });
 

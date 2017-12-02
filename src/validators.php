@@ -10,7 +10,7 @@ $productIdRule = v::intVal()->positive();
 $priceRule = v::floatType()->positive();
 $stockRule = v::intType()->positive();
 $quantityRule = v::intType()->positive();
-$dateRule = v::date('Y-m-d');
+$dateRule = v::notEmpty()->date('Y-m-d');
 $invoiceRule = v::stringType()->alnum('-')->noWhitespace()->length(13, 13);
 
 
