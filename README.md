@@ -1,26 +1,11 @@
-# Slim Framework 3 Skeleton Application
+# Slim Framework API using MySQL and Eloquent ORM with HMAC authentication and JWT authorizations
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+This is a small API Rest for an e-commerce store that updates product's prices and stock among others.
+It's developed in PHP using these resources:
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
-
-## Install the Application
-
-Run this command from the directory in which you want to install your new Slim Framework application.
-
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
-
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
-
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
-
-To run the application in development, you can also run this command. 
-
-	php composer.phar start
-
-Run this command to run the test suite
-
-	php composer.phar test
-
-That's it! Now go build something cool.
+* PHP 5.6
+* MySQL
+* Slim Framework 3
+* Eloquent 5.2
+* Respect Validation 1.1
+* Lcobucci JWT 3.2
