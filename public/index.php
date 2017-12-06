@@ -17,6 +17,11 @@ session_start();
 $settings = require __DIR__ . '/../src/settings.php';
 $app = new \Slim\App($settings);
 
+// Dotenv
+$dotenv = new \Dotenv\Dotenv(__DIR__ . '/../src/');
+$dotenv->load();
+$secretServerKey = getenv('KEY');
+
 // Set up dependencies
 require __DIR__ . '/../src/dependencies.php';
 
